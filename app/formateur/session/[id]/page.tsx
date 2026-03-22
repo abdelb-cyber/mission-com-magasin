@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { getLocalSessions, getLocalLearners } from '@/lib/store'
-import { syncGetLearners, syncGetSessionAttempts } from '@/lib/supabase-sync'
+import { getLocalSessions, getLocalLearners, deleteLocalSession, resetLocalSession } from '@/lib/store'
+import { syncGetLearners, syncGetSessionAttempts, syncDeleteSession, syncResetSession } from '@/lib/supabase-sync'
 import { MISSIONS } from '@/data/missions'
 import { Session, Learner, MissionAttempt } from '@/types'
 import { QRCodeSVG } from 'qrcode.react'
@@ -115,6 +115,8 @@ export default function SessionDetailPage() {
   const [baseUrl, setBaseUrl] = useState('')
   const [selectedLearner, setSelectedLearner] = useState<Learner | null>(null)
   const [refreshing, setRefreshing] = useState(false)
+  const [showConfirmReset, setShowConfirmReset] = useState(false)
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false)
 
   const loadData = useCallback(async (sessionFound: Session) => {
     // Local
@@ -356,6 +358,82 @@ export default function SessionDetailPage() {
         <Button fullWidth variant="secondary" size="sm" onClick={handleRefresh} disabled={refreshing}>
           {refreshing ? '⏳ Actualisation...' : '🔄 Actualiser les données'}
         </Button>
+
+        {/* Actions session */}
+        <Card className="border-amber-200 bg-amber-50">
+          <h3 className="font-bold text-gray-900 mb-3">⚙️ Gestion de la session</h3>
+
+          {!showConfirmReset && !showConfirmDelete && (
+            <div className="space-y-2">
+              <button
+                onClick={() => setShowConfirmReset(true)}
+                className="w-full p-3 rounded-xl border-2 border-amber-300 bg-white text-amber-700 font-medium text-sm hover:bg-amber-100 transition-all text-left"
+              >
+                🔄 Réinitialiser la session
+                <p className="text-xs text-amber-500 font-normal mt-0.5">Supprime tous les participants et scores, conserve la session et son code.</p>
+              </button>
+              <button
+                onClick={() => setShowConfirmDelete(true)}
+                className="w-full p-3 rounded-xl border-2 border-red-300 bg-white text-red-700 font-medium text-sm hover:bg-red-50 transition-all text-left"
+              >
+                🗑️ Supprimer la session
+                <p className="text-xs text-red-400 font-normal mt-0.5">Supprime définitivement la session, les participants et tous les scores.</p>
+              </button>
+            </div>
+          )}
+
+          {showConfirmReset && (
+            <div className="animate-slide-up bg-white rounded-xl border-2 border-amber-400 p-4">
+              <p className="font-bold text-amber-800">⚠️ Réinitialiser la session ?</p>
+              <p className="text-sm text-amber-700 mt-1">
+                Tous les participants et leurs scores seront supprimés. Le code <strong>{session.code}</strong> restera le même.
+              </p>
+              <div className="flex gap-2 mt-3">
+                <Button
+                  size="sm"
+                  variant="danger"
+                  onClick={async () => {
+                    resetLocalSession(session.id)
+                    await syncResetSession(session.id)
+                    setLearners([])
+                    setAttempts([])
+                    setShowConfirmReset(false)
+                  }}
+                >
+                  Oui, réinitialiser
+                </Button>
+                <Button size="sm" variant="secondary" onClick={() => setShowConfirmReset(false)}>
+                  Annuler
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {showConfirmDelete && (
+            <div className="animate-slide-up bg-white rounded-xl border-2 border-red-400 p-4">
+              <p className="font-bold text-red-800">🗑️ Supprimer définitivement ?</p>
+              <p className="text-sm text-red-700 mt-1">
+                La session <strong>{session.name}</strong>, tous ses participants et scores seront supprimés. Cette action est irréversible.
+              </p>
+              <div className="flex gap-2 mt-3">
+                <Button
+                  size="sm"
+                  variant="danger"
+                  onClick={async () => {
+                    deleteLocalSession(session.id)
+                    await syncDeleteSession(session.id)
+                    router.push('/formateur')
+                  }}
+                >
+                  Oui, supprimer
+                </Button>
+                <Button size="sm" variant="secondary" onClick={() => setShowConfirmDelete(false)}>
+                  Annuler
+                </Button>
+              </div>
+            </div>
+          )}
+        </Card>
 
         {/* Liste des participants */}
         <Card>

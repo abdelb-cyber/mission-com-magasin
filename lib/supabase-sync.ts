@@ -132,6 +132,35 @@ export async function syncGetSessionAttempts(sessionId: string): Promise<Mission
   }
 }
 
+// Supprimer une session et toutes ses données (apprenants + tentatives en cascade)
+export async function syncDeleteSession(sessionId: string): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false
+  try {
+    // Les tentatives et apprenants sont supprimés en cascade (ON DELETE CASCADE)
+    const { error } = await supabase
+      .from('sessions')
+      .delete()
+      .eq('id', sessionId)
+    return !error
+  } catch {
+    return false
+  }
+}
+
+// Réinitialiser une session (supprimer apprenants + tentatives mais garder la session)
+export async function syncResetSession(sessionId: string): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false
+  try {
+    // Supprimer les tentatives de cette session
+    await supabase.from('attempts').delete().eq('session_id', sessionId)
+    // Supprimer les apprenants de cette session
+    await supabase.from('learners').delete().eq('session_id', sessionId)
+    return true
+  } catch {
+    return false
+  }
+}
+
 // Récupérer les sessions depuis Supabase
 export async function syncGetSessions(): Promise<Session[]> {
   if (!isSupabaseConfigured()) return []

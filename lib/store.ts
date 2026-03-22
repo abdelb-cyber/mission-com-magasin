@@ -129,6 +129,22 @@ export async function loadProgressFromSupabase(): Promise<void> {
   saveStore(state)
 }
 
+// Supprimer une session locale
+export function deleteLocalSession(sessionId: string) {
+  const sessions = getLocalSessions().filter(s => s.id !== sessionId)
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions))
+    localStorage.removeItem(`${LEARNERS_KEY}-${sessionId}`)
+  }
+}
+
+// Réinitialiser une session locale (garder la session, supprimer les apprenants)
+export function resetLocalSession(sessionId: string) {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(`${LEARNERS_KEY}-${sessionId}`, JSON.stringify([]))
+  }
+}
+
 // Sessions
 const SESSIONS_KEY = 'mcm-sessions'
 const LEARNERS_KEY = 'mcm-learners'
