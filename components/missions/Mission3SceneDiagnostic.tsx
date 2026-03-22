@@ -64,15 +64,19 @@ export default function Mission3SceneDiagnostic({ mission, onComplete }: Props) 
           </p>
         </div>
 
-        {/* Corrections détaillées */}
         <div className="card">
-          <h3 className="font-bold mb-3">🔍 Corrections</h3>
+          <h3 className="font-bold mb-3">🔍 Corrections détaillées</h3>
           <div className="space-y-3">
             {errorElements.map(el => (
-              <div key={el.id} className={`p-3 rounded-xl text-sm ${foundElements.has(el.id) ? 'bg-success-50 border border-success-200' : 'bg-danger-50 border border-danger-200'}`}>
-                <p className="font-semibold text-gray-900">{el.label}</p>
-                <p className="text-gray-600 mt-1">{el.errorDescription}</p>
-                <p className="text-primary-600 mt-1 font-medium">💡 {el.correctionHint}</p>
+              <div key={el.id} className={`p-3 rounded-xl text-sm ${foundElements.has(el.id) ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+                <div className="flex items-start gap-2">
+                  <span>{foundElements.has(el.id) ? '✅' : '❌'}</span>
+                  <div>
+                    <p className="font-semibold text-gray-900">{el.label}</p>
+                    <p className="text-gray-600 mt-1">{el.errorDescription}</p>
+                    <p className="text-blue-600 mt-1 font-medium text-xs">💡 {el.correctionHint}</p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -86,21 +90,22 @@ export default function Mission3SceneDiagnostic({ mission, onComplete }: Props) 
   return (
     <div className="space-y-4">
       {/* Consigne */}
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
-        <p className="text-sm text-amber-800 font-medium">
-          🔍 Observez cette scène du rayon peinture et cliquez sur les erreurs de communication que vous repérez.
+      <div className="bg-white border-2 border-amber-300 rounded-xl p-3">
+        <p className="text-sm text-gray-800 font-medium">
+          🔍 Observez cette scène du rayon peinture et <strong>cliquez sur les erreurs</strong> de communication.
         </p>
-        <p className="text-xs text-amber-600 mt-1">
-          Erreurs trouvées : {foundErrors}/{totalErrors} • Faux clics : {wrongClicks}
-        </p>
+        <div className="flex items-center gap-4 mt-2 text-xs">
+          <span className="text-green-600 font-bold">✅ Trouvées : {foundErrors}/{totalErrors}</span>
+          <span className="text-red-500 font-medium">❌ Faux clics : {wrongClicks}</span>
+        </div>
       </div>
 
       {/* Scène interactive */}
-      <div className="card p-2 relative">
-        <div className="relative">
-          <StoreScene showErrors={false} />
+      <div className="card p-2">
+        <div className="relative bg-gray-50 rounded-xl overflow-hidden">
+          <StoreScene />
 
-          {/* Zones cliquables superposées */}
+          {/* Zones cliquables superposées sur la scène */}
           {SCENE_ELEMENTS.map(el => {
             const isFound = foundElements.has(el.id)
             return (
@@ -108,17 +113,24 @@ export default function Mission3SceneDiagnostic({ mission, onComplete }: Props) 
                 key={el.id}
                 onClick={() => handleElementClick(el)}
                 disabled={isFound}
-                className={`hotspot ${isFound ? (el.isError ? 'found-error' : 'found-correct') : ''}`}
+                className="absolute transition-all duration-200"
                 style={{
                   left: `${el.x}%`,
                   top: `${el.y}%`,
                   width: `${el.width}%`,
                   height: `${el.height}%`,
+                  border: isFound
+                    ? el.isError ? '3px solid #EF4444' : '3px solid #22C55E'
+                    : '2px solid transparent',
+                  borderRadius: '6px',
+                  backgroundColor: isFound
+                    ? el.isError ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.15)'
+                    : 'transparent',
+                  cursor: isFound ? 'default' : 'pointer',
                 }}
-                title={isFound ? el.label : 'Cliquez pour inspecter'}
               >
                 {isFound && (
-                  <span className="absolute top-1 right-1 text-xs">
+                  <span className="absolute -top-2 -right-2 text-base drop-shadow-md">
                     {el.isError ? '❌' : '✅'}
                   </span>
                 )}
@@ -133,14 +145,22 @@ export default function Mission3SceneDiagnostic({ mission, onComplete }: Props) 
         <FeedbackBanner
           type={clickedElement.isError ? 'success' : 'warning'}
           title={clickedElement.isError ? 'Erreur identifiée !' : 'Cet élément est correct'}
-          message={clickedElement.isError ? (clickedElement.errorDescription || '') : `"${clickedElement.label}" est correctement placé.`}
+          message={clickedElement.isError
+            ? (clickedElement.errorDescription || '')
+            : `"${clickedElement.label}" est bien positionné.`}
           visible
         />
       )}
 
       {/* Bouton terminer */}
-      <Button fullWidth variant={foundErrors >= totalErrors ? 'success' : 'secondary'} onClick={handleFinish}>
-        {foundErrors >= totalErrors ? '✅ Terminer le diagnostic' : `Terminer (${foundErrors}/${totalErrors} erreurs trouvées)`}
+      <Button
+        fullWidth
+        variant={foundErrors >= totalErrors ? 'success' : 'secondary'}
+        onClick={handleFinish}
+      >
+        {foundErrors >= totalErrors
+          ? '✅ Terminer le diagnostic'
+          : `Terminer (${foundErrors}/${totalErrors} erreurs trouvées)`}
       </Button>
     </div>
   )

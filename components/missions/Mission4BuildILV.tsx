@@ -126,49 +126,134 @@ export default function Mission4BuildILV({ mission, onComplete }: Props) {
         </p>
       </div>
 
-      {/* Maquette du rayon */}
+      {/* Maquette du rayon – grande et lisible */}
       <div className="card">
-        <h3 className="font-semibold text-sm text-gray-700 mb-3">Votre rayon peinture</h3>
-        <div className="bg-gray-100 rounded-xl p-4 relative min-h-[200px]">
-          {/* Représentation simplifiée du rayon */}
-          <svg width="100%" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
-            {/* Gondole */}
-            <rect x="20" y="30" width="260" height="140" fill="white" stroke="#D1D5DB" strokeWidth="1" rx="4"/>
-            {[40, 75, 110, 145].map(y => (
-              <rect key={y} x="20" y={y} width="260" height="3" fill="#9CA3AF"/>
-            ))}
-            {/* Produits */}
-            {[0,1,2,3,4,5,6,7].map(i => (
-              <rect key={`p-${i}`} x={30 + i * 32} y={45} width={25} height={28} rx="2"
-                fill={['#BFDBFE','#BBF7D0','#FDE68A','#FECACA','#E9D5FF','#BFDBFE','#FDE68A','#BBF7D0'][i]}/>
-            ))}
-            {/* Éléments sélectionnés */}
-            {selectedElements.has('panneau-suspendu') && (
+        <h3 className="font-semibold text-sm text-gray-700 mb-3">Votre rayon peinture — aperçu en direct</h3>
+        <div className="bg-gray-50 rounded-xl p-2 relative">
+          <svg width="100%" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg">
+            {/* Sol */}
+            <rect x="0" y="230" width="320" height="50" fill="#E5E7EB"/>
+
+            {/* Mur */}
+            <rect x="0" y="0" width="320" height="230" fill="#F9FAFB"/>
+
+            {/* Panneau suspendu */}
+            {selectedElements.has('panneau-suspendu') ? (
               <g>
-                <rect x="80" y="5" width="140" height="22" rx="3" fill="#1E40AF"/>
-                <text x="150" y="19" textAnchor="middle" fill="white" fontSize="8" fontWeight="bold">PEINTURE</text>
+                <rect x="160" y="0" width="4" height="12" fill="#6B7280" x1="160"/>
+                <rect x="85" y="12" width="150" height="30" rx="4" fill="#1E40AF"/>
+                <text x="160" y="32" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">PEINTURE</text>
+              </g>
+            ) : (
+              <g>
+                <rect x="85" y="12" width="150" height="30" rx="4" fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeDasharray="6,4"/>
+                <text x="160" y="32" textAnchor="middle" fill="#D1D5DB" fontSize="9">Panneau suspendu</text>
               </g>
             )}
-            {selectedElements.has('bandeau') && (
-              <rect x="20" y="27" width="260" height="8" rx="1" fill="#3B82F6" opacity="0.9"/>
+
+            {/* Gondole */}
+            <rect x="20" y="50" width="280" height="170" fill="white" stroke="#D1D5DB" strokeWidth="1" rx="3"/>
+
+            {/* Bandeau de gondole */}
+            {selectedElements.has('bandeau') ? (
+              <g>
+                <rect x="20" y="50" width="280" height="14" rx="3" fill="#3B82F6"/>
+                <rect x="20" y="60" width="280" height="4" fill="#3B82F6"/>
+                <text x="160" y="61" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold">PEINTURES INTÉRIEURES</text>
+              </g>
+            ) : (
+              <rect x="20" y="50" width="280" height="14" rx="3" fill="none" stroke="#D1D5DB" strokeWidth="1" strokeDasharray="4,3"/>
             )}
+
+            {/* Étagères */}
+            {[70, 110, 150, 190].map(y => (
+              <rect key={y} x="20" y={y} width="280" height="3" fill="#9CA3AF"/>
+            ))}
+
+            {/* Séparateur */}
+            {selectedElements.has('separateur') && (
+              <g>
+                <rect x="158" y="50" width="4" height="170" fill="#F97316" opacity="0.7" rx="1"/>
+                <text x="140" y="138" textAnchor="end" fill="#F97316" fontSize="6" fontWeight="600">Mate</text>
+                <text x="180" y="138" textAnchor="start" fill="#F97316" fontSize="6" fontWeight="600">Satin</text>
+              </g>
+            )}
+
+            {/* Pots de peinture */}
+            {[0,1,2,3,4,5,6,7].map(i => (
+              <rect key={`p1-${i}`} x={28 + i*35} y={76} width={28} height={30} rx="3"
+                fill={['#BFDBFE','#BBF7D0','#FDE68A','#FECACA','#E9D5FF','#BFDBFE','#FDE68A','#BBF7D0'][i]}
+                stroke={['#93C5FD','#86EFAC','#FCD34D','#FCA5A5','#D8B4FE','#93C5FD','#FCD34D','#86EFAC'][i]}
+                strokeWidth="1"/>
+            ))}
+            {[0,1,2,3,4,5,6,7].map(i => (
+              <rect key={`p2-${i}`} x={28 + i*35} y={116} width={28} height={30} rx="3"
+                fill={['#FDE68A','#BFDBFE','#BBF7D0','#E9D5FF','#FECACA','#FDE68A','#BFDBFE','#BBF7D0'][i]}
+                stroke={['#FCD34D','#93C5FD','#86EFAC','#D8B4FE','#FCA5A5','#FCD34D','#93C5FD','#86EFAC'][i]}
+                strokeWidth="1"/>
+            ))}
+            {[0,1,2,3,4,5,6,7].map(i => (
+              <rect key={`p3-${i}`} x={28 + i*35} y={156} width={28} height={30} rx="3"
+                fill={['#FECACA','#FDE68A','#BFDBFE','#BBF7D0','#BFDBFE','#E9D5FF','#FECACA','#FDE68A'][i]}
+                stroke={['#FCA5A5','#FCD34D','#93C5FD','#86EFAC','#93C5FD','#D8B4FE','#FCA5A5','#FCD34D'][i]}
+                strokeWidth="1"/>
+            ))}
+
+            {/* Étiquettes prix */}
             {selectedElements.has('etiquette') && (
               <g>
-                {[0,1,2].map(i => (
-                  <rect key={`et-${i}`} x={35 + i * 90} y={78} width={35} height={12} rx="2" fill="#22C55E" opacity="0.8"/>
+                {[0,1,2,3].map(i => (
+                  <g key={`et-${i}`}>
+                    <rect x={30 + i*72} y={193} width={55} height={18} rx="2" fill="white" stroke="#22C55E" strokeWidth="1.5"/>
+                    <rect x={30 + i*72} y={193} width={55} height="6" rx="2" fill="#22C55E"/>
+                    <text x={57 + i*72} y={207} textAnchor="middle" fill="#111827" fontSize="5" fontWeight="bold">34,90€</text>
+                  </g>
                 ))}
               </g>
             )}
-            {selectedElements.has('flechage') && (
-              <polygon points="150,175 160,190 156,190 156,198 144,198 144,190 140,190" fill="#3B82F6" opacity="0.6"/>
-            )}
-            {selectedElements.has('separateur') && (
-              <rect x="148" y="30" width="4" height="140" fill="#F97316" opacity="0.6"/>
-            )}
+
+            {/* Fiche information produit */}
             {selectedElements.has('fiche-info') && (
-              <rect x="240" y="50" width="30" height="40" rx="2" fill="#EFF6FF" stroke="#3B82F6" strokeWidth="1"/>
+              <g>
+                <rect x="265" y="70" width="30" height="42" rx="2" fill="white" stroke="#3B82F6" strokeWidth="1.5"/>
+                <rect x="265" y="70" width="30" height="10" rx="2" fill="#3B82F6"/>
+                <text x="280" y="78" textAnchor="middle" fill="white" fontSize="4" fontWeight="bold">INFO</text>
+                <rect x="269" y="84" width="22" height="2" rx="1" fill="#E5E7EB"/>
+                <rect x="269" y="89" width="18" height="2" rx="1" fill="#E5E7EB"/>
+                <rect x="269" y="94" width="20" height="2" rx="1" fill="#E5E7EB"/>
+                <rect x="269" y="99" width="15" height="2" rx="1" fill="#E5E7EB"/>
+              </g>
+            )}
+
+            {/* Plan du rayon */}
+            {selectedElements.has('plan') && (
+              <g>
+                <rect x="5" y="235" width="35" height="28" rx="3" fill="#EFF6FF" stroke="#3B82F6" strokeWidth="1"/>
+                <text x="22" y="248" textAnchor="middle" fill="#1E40AF" fontSize="4" fontWeight="bold">PLAN</text>
+                <rect x="10" y="252" width="10" height="6" rx="1" fill="#BFDBFE"/>
+                <rect x="22" y="252" width="10" height="6" rx="1" fill="#BBF7D0"/>
+              </g>
+            )}
+
+            {/* Fléchage directionnel */}
+            {selectedElements.has('flechage') && (
+              <g>
+                <polygon points="160,238 172,255 166,255 166,270 154,270 154,255 148,255" fill="#3B82F6" opacity="0.7"/>
+                <text x="160" y="278" textAnchor="middle" fill="#3B82F6" fontSize="6" fontWeight="600">Caisse →</text>
+              </g>
             )}
           </svg>
+
+          {/* Légende des éléments actifs */}
+          {selectedElements.size > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {ILV_BUILD_OPTIONS.elements.filter(e => selectedElements.has(e.id)).map(e => (
+                <span key={e.id} className="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-full font-medium">
+                  ✓ {e.label}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
