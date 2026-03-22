@@ -1,0 +1,158 @@
+'use client'
+
+// Store local simple pour gérer l'état de l'application
+// Fonctionne avec ou sans Supabase
+
+import { GameState, Learner, MissionAttempt, Session } from '@/types'
+
+const STORAGE_KEY = 'mission-com-magasin'
+
+function getStore(): GameState {
+  if (typeof window === 'undefined') {
+    return { learner: null, session: null, currentMission: null, attempts: [], isTrainingMode: false }
+  }
+  const raw = localStorage.getItem(STORAGE_KEY)
+  if (!raw) {
+    return { learner: null, session: null, currentMission: null, attempts: [], isTrainingMode: false }
+  }
+  return JSON.parse(raw)
+}
+
+function saveStore(state: GameState) {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+}
+
+export function setLearner(learner: Learner) {
+  const state = getStore()
+  state.learner = learner
+  saveStore(state)
+}
+
+export function getLearner(): Learner | null {
+  return getStore().learner
+}
+
+export function setSession(session: Session) {
+  const state = getStore()
+  state.session = session
+  saveStore(state)
+}
+
+export function getSession(): Session | null {
+  return getStore().session
+}
+
+export function setTrainingMode(isTraining: boolean) {
+  const state = getStore()
+  state.isTrainingMode = isTraining
+  saveStore(state)
+}
+
+export function isTrainingMode(): boolean {
+  return getStore().isTrainingMode
+}
+
+export function saveAttempt(attempt: MissionAttempt) {
+  const state = getStore()
+  // Remplacer le dernier attempt pour cette mission si existant
+  const idx = state.attempts.findIndex(a => a.mission_id === attempt.mission_id)
+  if (idx >= 0) {
+    // Garder le meilleur score
+    if (attempt.score > state.attempts[idx].score) {
+      state.attempts[idx] = attempt
+    }
+  } else {
+    state.attempts.push(attempt)
+  }
+  // Mettre à jour le score total
+  if (state.learner) {
+    state.learner.total_score = state.attempts.reduce((sum, a) => sum + a.score, 0)
+  }
+  saveStore(state)
+}
+
+export function getAttempts(): MissionAttempt[] {
+  return getStore().attempts
+}
+
+export function getAttemptForMission(missionId: number): MissionAttempt | undefined {
+  return getStore().attempts.find(a => a.mission_id === missionId)
+}
+
+export function getTotalScore(): number {
+  return getStore().attempts.reduce((sum, a) => sum + a.score, 0)
+}
+
+export function getMissionsCompleted(): number {
+  return getStore().attempts.length
+}
+
+export function resetStore() {
+  if (typeof window === 'undefined') return
+  localStorage.removeItem(STORAGE_KEY)
+}
+
+// Sessions locales (pour le formateur en mode hors-ligne)
+const SESSIONS_KEY = 'mcm-sessions'
+const LEARNERS_KEY = 'mcm-learners'
+
+export function createLocalSession(name: string): Session {
+  const sessions = getLocalSessions()
+  const code = Math.random().toString(36).substring(2, 8).toUpperCase()
+  const session: Session = {
+    id: crypto.randomUUID(),
+    name,
+    code,
+    created_at: new Date().toISOString(),
+    is_active: true,
+    created_by: 'formateur',
+  }
+  sessions.push(session)
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions))
+  }
+  return session
+}
+
+export function getLocalSessions(): Session[] {
+  if (typeof window === 'undefined') return []
+  const raw = localStorage.getItem(SESSIONS_KEY)
+  return raw ? JSON.parse(raw) : []
+}
+
+export function getLocalSessionByCode(code: string): Session | null {
+  const sessions = getLocalSessions()
+  return sessions.find(s => s.code === code.toUpperCase()) || null
+}
+
+export function joinSession(code: string, pseudo: string): { learner: Learner; session: Session } | null {
+  const session = getLocalSessionByCode(code)
+  if (!session) return null
+
+  const learner: Learner = {
+    id: crypto.randomUUID(),
+    pseudo,
+    session_id: session.id,
+    created_at: new Date().toISOString(),
+    total_score: 0,
+  }
+
+  // Sauvegarder le learner dans la liste de la session
+  const learners = getLocalLearners(session.id)
+  learners.push(learner)
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(`${LEARNERS_KEY}-${session.id}`, JSON.stringify(learners))
+  }
+
+  setLearner(learner)
+  setSession(session)
+
+  return { learner, session }
+}
+
+export function getLocalLearners(sessionId: string): Learner[] {
+  if (typeof window === 'undefined') return []
+  const raw = localStorage.getItem(`${LEARNERS_KEY}-${sessionId}`)
+  return raw ? JSON.parse(raw) : []
+}
