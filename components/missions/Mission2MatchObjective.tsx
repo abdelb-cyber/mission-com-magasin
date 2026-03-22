@@ -21,6 +21,8 @@ export default function Mission2MatchObjective({ mission, onComplete }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [showResults, setShowResults] = useState(false)
   const [correctAnswers, setCorrectAnswers] = useState(0)
+  const [answers, setAnswers] = useState<Array<{ situation: string; choix: string; correct: string; ok: boolean }>>([])
+
 
   const scenario = MATCH_SCENARIOS[currentIdx]
   const isFinished = currentIdx >= MATCH_SCENARIOS.length
@@ -38,6 +40,10 @@ export default function Mission2MatchObjective({ mission, onComplete }: Props) {
     if (feedback) return
     setSelectedId(supportId)
     const isCorrect = supportId === scenario.correctSupportId
+
+    const chosenLabel = scenario.supports.find(s => s.id === supportId)?.label || supportId
+    const correctLabel = scenario.supports.find(s => s.id === scenario.correctSupportId)?.label || scenario.correctSupportId
+    setAnswers(prev => [...prev, { situation: scenario.situation.slice(0, 60) + '...', choix: chosenLabel, correct: correctLabel, ok: isCorrect }])
 
     if (isCorrect) {
       setScore(prev => prev + pointsPerQ)
@@ -60,7 +66,7 @@ export default function Mission2MatchObjective({ mission, onComplete }: Props) {
         score: Math.min(score, mission.maxScore),
         max_score: mission.maxScore,
         completed_at: new Date().toISOString(),
-        details: { correctAnswers },
+        details: { correctAnswers, answers },
         time_spent: 0,
       })
     } else {

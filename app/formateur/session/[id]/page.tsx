@@ -10,6 +10,101 @@ import { QRCodeSVG } from 'qrcode.react'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 
+// Composant pour afficher les détails d'une tentative de façon typée
+function DetailView({ details }: { details: Record<string, unknown> }) {
+  const d = details
+  const arr = (key: string): string[] => {
+    const v = d[key]
+    return Array.isArray(v) ? v.map(String) : []
+  }
+  const answers = Array.isArray(d.answers) ? d.answers : []
+
+  // Détecter le type de réponses
+  const hasAnswersWithOk = answers.length > 0 && answers[0]?.ok !== undefined && answers[0]?.bonnes === undefined
+  const hasAnswersWithBonnes = answers.length > 0 && answers[0]?.bonnes !== undefined
+
+  return (
+    <>
+      {/* M1/M2 : réponses avec ok/label/choix/correct */}
+      {hasAnswersWithOk && (
+        <div>
+          <p className="font-semibold text-gray-700 mb-1">Réponses détaillées :</p>
+          {answers.map((a: Record<string, unknown>, i: number) => {
+            const ok = Boolean(a.ok)
+            const label = String(a.label || a.situation || '')
+            const choix = a.choix ? String(a.choix) : ''
+            const correct = a.correct ? String(a.correct) : ''
+            return (
+              <p key={i} className={ok ? 'text-green-700' : 'text-red-600'}>
+                {ok ? '✅' : '❌'} {label}
+                {!ok && choix ? ` → choisi : ${choix}` : ''}
+                {!ok && correct ? ` (correct : ${correct})` : ''}
+              </p>
+            )
+          })}
+        </div>
+      )}
+
+      {/* M3 : diagnostic détaillé */}
+      {arr('erreursTrouvees').length > 0 && (
+        <div>
+          <p className="font-semibold text-green-700">✅ Erreurs trouvées :</p>
+          {arr('erreursTrouvees').map((e, i) => <p key={i} className="text-green-600 pl-3">• {e}</p>)}
+        </div>
+      )}
+      {arr('erreursManquees').length > 0 && (
+        <div>
+          <p className="font-semibold text-red-600">❌ Erreurs manquées :</p>
+          {arr('erreursManquees').map((e, i) => <p key={i} className="text-red-500 pl-3">• {e}</p>)}
+        </div>
+      )}
+      {arr('fauxClicsDetails').length > 0 && (
+        <div>
+          <p className="font-semibold text-amber-600">⚠️ Faux clics :</p>
+          {arr('fauxClicsDetails').map((e, i) => <p key={i} className="text-amber-500 pl-3">• {e}</p>)}
+        </div>
+      )}
+
+      {/* M6 : détail par cas réglementaire */}
+      {hasAnswersWithBonnes && (
+        <div>
+          <p className="font-semibold text-gray-700 mb-1">Détail par cas :</p>
+          {answers.map((cas: Record<string, unknown>, i: number) => {
+            const bonnes = Array.isArray(cas.bonnes) ? cas.bonnes.map(String) : []
+            const manquees = Array.isArray(cas.manquees) ? cas.manquees.map(String) : []
+            const pieges = Array.isArray(cas.pieges) ? cas.pieges.map(String) : []
+            return (
+              <div key={i} className="border-l-2 border-gray-300 pl-2 mb-2">
+                <p className="font-medium text-gray-800">{String(cas.cas || '')}</p>
+                {bonnes.map((b, j) => <p key={`b${j}`} className="text-green-600">✅ {b}</p>)}
+                {manquees.map((m, j) => <p key={`m${j}`} className="text-red-500">❌ {m}</p>)}
+                {pieges.map((p, j) => <p key={`p${j}`} className="text-amber-500">⚠️ Piège : {p}</p>)}
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Fallbacks simples */}
+      {d.wrongClicks !== undefined && arr('fauxClicsDetails').length === 0 && (
+        <p>Faux clics : {String(d.wrongClicks)}</p>
+      )}
+      {d.correctAnswers !== undefined && !d.answers && (
+        <p>Réponses correctes : {String(d.correctAnswers)}</p>
+      )}
+      {arr('errors').length > 0 && !d.answers && (
+        <div>
+          <p className="font-semibold text-red-600">Erreurs :</p>
+          {arr('errors').map((e, i) => <p key={i} className="text-red-500 pl-3">• {e}</p>)}
+        </div>
+      )}
+      {arr('selected').length > 0 && (
+        <p>Éléments sélectionnés : {arr('selected').join(', ')}</p>
+      )}
+    </>
+  )
+}
+
 export default function SessionDetailPage() {
   const params = useParams()
   const router = useRouter()
@@ -156,31 +251,8 @@ export default function SessionDetailPage() {
 
                           {/* Détails spécifiques selon la mission */}
                           {attempt.details && typeof attempt.details === 'object' && (
-                            <div className="bg-gray-50 rounded-lg p-2 mt-1">
-                              {(() => {
-                                const d = attempt.details as Record<string, unknown>
-                                return (
-                                  <>
-                                    {d.errors && Array.isArray(d.errors) && (d.errors as string[]).length > 0 && (
-                                      <div>
-                                        <p className="font-semibold text-red-600">Erreurs :</p>
-                                        {(d.errors as string[]).map((err: string, i: number) => (
-                                          <p key={i} className="text-red-500">• {err}</p>
-                                        ))}
-                                      </div>
-                                    )}
-                                    {d.foundErrors !== undefined && (
-                                      <p>Erreurs trouvées : {String(d.foundErrors)}/{String(d.totalErrors)}</p>
-                                    )}
-                                    {d.wrongClicks !== undefined && (
-                                      <p>Faux clics : {String(d.wrongClicks)}</p>
-                                    )}
-                                    {d.correctAnswers !== undefined && (
-                                      <p>Réponses correctes : {String(d.correctAnswers)}</p>
-                                    )}
-                                  </>
-                                )
-                              })()}
+                            <div className="bg-gray-50 rounded-lg p-2 mt-1 space-y-1">
+                              <DetailView details={attempt.details} />
                             </div>
                           )}
                         </div>

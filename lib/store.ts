@@ -5,7 +5,7 @@
 // Supabase synchronise en arrière-plan quand disponible
 
 import { GameState, Learner, MissionAttempt, Session } from '@/types'
-import { syncCreateSession, syncCreateLearner, syncSaveAttempt, syncUpdateLearnerScore, syncFindSessionByCode } from './supabase-sync'
+import { syncCreateSession, syncCreateLearner, syncSaveAttempt, syncUpdateLearnerScore, syncFindSessionByCode, syncGetAttempts } from './supabase-sync'
 
 const STORAGE_KEY = 'mission-com-magasin'
 
@@ -102,6 +102,31 @@ export function getMissionsCompleted(): number {
 export function resetStore() {
   if (typeof window === 'undefined') return
   localStorage.removeItem(STORAGE_KEY)
+}
+
+// Charger la progression depuis Supabase pour un apprenant existant
+export async function loadProgressFromSupabase(): Promise<void> {
+  const state = getStore()
+  if (!state.learner || state.learner.session_id === 'training') return
+
+  const remoteAttempts = await syncGetAttempts(state.learner.id)
+  if (remoteAttempts.length === 0) return
+
+  // Fusionner : garder le meilleur score par mission
+  for (const remote of remoteAttempts) {
+    const localIdx = state.attempts.findIndex(a => a.mission_id === remote.mission_id)
+    if (localIdx >= 0) {
+      if (remote.score > state.attempts[localIdx].score) {
+        state.attempts[localIdx] = remote
+      }
+    } else {
+      state.attempts.push(remote)
+    }
+  }
+
+  // Recalculer le score total
+  state.learner.total_score = state.attempts.reduce((sum, a) => sum + a.score, 0)
+  saveStore(state)
 }
 
 // Sessions

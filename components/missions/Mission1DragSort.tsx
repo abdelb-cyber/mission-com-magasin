@@ -26,6 +26,7 @@ export default function Mission1DragSort({ mission, onComplete }: Props) {
   const [score, setScore] = useState(0)
   const [showResults, setShowResults] = useState(false)
   const [errors, setErrors] = useState<string[]>([])
+  const [answers, setAnswers] = useState<Array<{ label: string; choix: string; correct: string; ok: boolean }>>([])
 
   const currentItem = items[currentIndex]
   const isFinished = currentIndex >= items.length
@@ -40,6 +41,9 @@ export default function Mission1DragSort({ mission, onComplete }: Props) {
     const pointsPerCard = currentIndex === items.length - 1
       ? mission.maxScore - Math.floor(mission.maxScore / items.length) * (items.length - 1)
       : Math.floor(mission.maxScore / items.length)
+
+    // Enregistrer la réponse détaillée
+    setAnswers(prev => [...prev, { label: item.label, choix: choice, correct: item.category, ok: isCorrect }])
 
     if (isCorrect) {
       setScore(prev => prev + pointsPerCard)
@@ -65,7 +69,7 @@ export default function Mission1DragSort({ mission, onComplete }: Props) {
           score: Math.min(finalScore, mission.maxScore),
           max_score: mission.maxScore,
           completed_at: new Date().toISOString(),
-          details: { errors },
+          details: { errors, answers: [...answers, { label: item.label, choix: choice, correct: item.category, ok: isCorrect }] },
           time_spent: 0,
         })
       }

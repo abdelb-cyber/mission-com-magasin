@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { getLearner, getAttempts, getTotalScore, isTrainingMode as checkTraining } from '@/lib/store'
+import { getLearner, getAttempts, getTotalScore, isTrainingMode as checkTraining, loadProgressFromSupabase } from '@/lib/store'
 import { MISSIONS } from '@/data/missions'
 import MissionCard from '@/components/ui/MissionCard'
 import ProgressBar from '@/components/ui/ProgressBar'
@@ -22,6 +22,15 @@ export default function DashboardPage() {
     setAttempts(getAttempts())
     setTotalScore(getTotalScore())
     setIsTraining(checkTraining())
+
+    // Charger la progression depuis Supabase (si l'apprenant revient)
+    loadProgressFromSupabase().then(() => {
+      // Rafraîchir après synchronisation
+      const updated = getLearner()
+      if (updated) setLearner({ ...updated })
+      setAttempts(getAttempts())
+      setTotalScore(getTotalScore())
+    })
   }, [router])
 
   if (!learner) return null

@@ -46,7 +46,12 @@ export default function Mission3SceneDiagnostic({ mission, onComplete }: Props) 
       score: Math.min(score, mission.maxScore),
       max_score: mission.maxScore,
       completed_at: new Date().toISOString(),
-      details: { foundErrors, wrongClicks, totalErrors },
+      details: {
+        foundErrors, wrongClicks, totalErrors,
+        erreursTrouvees: errorElements.filter(e => foundElements.has(e.id)).map(e => e.label),
+        erreursManquees: errorElements.filter(e => !foundElements.has(e.id)).map(e => e.label),
+        fauxClicsDetails: SCENE_ELEMENTS.filter(e => !e.isError && foundElements.has(e.id)).map(e => e.label),
+      },
       time_spent: 0,
     })
   }

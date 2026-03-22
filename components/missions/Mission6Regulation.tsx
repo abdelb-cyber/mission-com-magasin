@@ -20,6 +20,7 @@ export default function Mission6Regulation({ mission, onComplete }: Props) {
   const [showFinalResults, setShowFinalResults] = useState(false)
   const [totalScore, setTotalScore] = useState(0)
   const [caseScores, setCaseScores] = useState<number[]>([])
+  const [allCaseAnswers, setAllCaseAnswers] = useState<Array<{ cas: string; bonnes: string[]; manquees: string[]; pieges: string[] }>>([])
 
   const caseData = REGULATION_CASES[currentIdx]
   const pointsPerCase = Math.round(mission.maxScore / REGULATION_CASES.length)
@@ -49,6 +50,12 @@ export default function Mission6Regulation({ mission, onComplete }: Props) {
 
     setTotalScore(prev => prev + caseScore)
     setCaseScores(prev => [...prev, caseScore])
+    setAllCaseAnswers(prev => [...prev, {
+      cas: caseData.title,
+      bonnes: correctErrors.filter(c => selectedChoices.has(c.id)).map(c => c.text),
+      manquees: correctErrors.filter(c => !selectedChoices.has(c.id)).map(c => c.text),
+      pieges: wrongChoices.filter(c => selectedChoices.has(c.id)).map(c => c.text),
+    }])
     setShowCaseResult(true)
   }
 
@@ -65,7 +72,7 @@ export default function Mission6Regulation({ mission, onComplete }: Props) {
         score: Math.min(totalScore, mission.maxScore),
         max_score: mission.maxScore,
         completed_at: new Date().toISOString(),
-        details: { caseScores },
+        details: { caseScores, answers: allCaseAnswers },
         time_spent: 0,
       })
     } else {
