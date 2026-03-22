@@ -27,26 +27,28 @@ export default function Mission4BuildILV({ mission, onComplete }: Props) {
   }
 
   const handleValidate = () => {
-    // Évaluation automatique
     const selected = ILV_BUILD_OPTIONS.elements.filter(e => selectedElements.has(e.id))
+    const correctSelected = selected.filter(e => e.isCorrect)
+    const wrongSelected = selected.filter(e => !e.isCorrect)
     const newRatings: Record<string, number> = {}
 
-    // Lisibilité : bonus si panneau + bandeau sélectionnés
-    const hasSignaletique = selected.some(e => e.category === 'signalétique')
-    const hasBandeau = selected.some(e => e.category === 'information')
+    // Lisibilité
+    const hasSignaletique = correctSelected.some(e => e.category === 'signalétique')
+    const hasBandeau = correctSelected.some(e => e.category === 'information')
     newRatings['lisibilite'] = hasSignaletique && hasBandeau ? 20 : hasSignaletique || hasBandeau ? 10 : 0
 
-    // Cohérence : bonus si au moins 4 éléments complémentaires
-    newRatings['coherence'] = selected.length >= 4 ? 20 : selected.length >= 2 ? 10 : 0
+    // Cohérence : bonus si bons éléments, malus si PLV mélangée
+    const goodCount = correctSelected.length
+    newRatings['coherence'] = Math.max(0, (goodCount >= 4 ? 20 : goodCount >= 2 ? 10 : 0) - wrongSelected.length * 7)
 
-    // Utilité : chaque élément sert un objectif
-    newRatings['utilite'] = Math.min(20, selected.length * 4)
+    // Utilité
+    newRatings['utilite'] = Math.max(0, Math.min(20, correctSelected.length * 4) - wrongSelected.length * 5)
 
-    // Conformité : étiquette prix obligatoire
+    // Conformité
     const hasEtiquette = selectedElements.has('etiquette')
     newRatings['conformite'] = hasEtiquette ? 20 : 0
 
-    // Accessibilité : fléchage + plan
+    // Accessibilité
     const hasFlechage = selectedElements.has('flechage')
     const hasPlan = selectedElements.has('plan')
     newRatings['accessibilite'] = hasFlechage && hasPlan ? 20 : hasFlechage || hasPlan ? 10 : 0
@@ -104,12 +106,22 @@ export default function Mission4BuildILV({ mission, onComplete }: Props) {
           </div>
         </div>
 
+        {/* Alertes pièges */}
+        {ILV_BUILD_OPTIONS.elements.filter(e => !e.isCorrect && selectedElements.has(e.id)).length > 0 && (
+          <div className="card bg-red-50 border border-red-200">
+            <h3 className="font-bold text-red-800 mb-2">⚠️ Éléments PLV sélectionnés par erreur</h3>
+            {ILV_BUILD_OPTIONS.elements.filter(e => !e.isCorrect && selectedElements.has(e.id)).map(e => (
+              <p key={e.id} className="text-sm text-red-700">• <strong>{e.label}</strong> est un support de PLV (publicité), pas d&apos;ILV (information).</p>
+            ))}
+          </div>
+        )}
+
         {/* Conseils */}
-        <div className="card bg-primary-50 border-primary-200">
+        <div className="card bg-primary-50 border border-primary-200">
           <h3 className="font-bold text-primary-800 mb-2">💡 Conseil</h3>
           <p className="text-sm text-primary-700">
             Une ILV efficace combine signalétique visible (panneaux, fléchage), information réglementaire (étiquettes prix conformes)
-            et aide à la décision (fiches conseil). Chaque élément doit servir un objectif d&apos;information clair.
+            et aide à la décision (fiches conseil). Attention à ne pas mélanger ILV et PLV : les supports promotionnels n&apos;ont pas leur place dans la signalétique d&apos;information.
           </p>
         </div>
 

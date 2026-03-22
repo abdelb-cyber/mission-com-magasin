@@ -312,6 +312,19 @@ export const SCENE_ELEMENTS: SceneElement[] = [
     errorDescription: 'Une affiche promotionnelle périmée (-30% jusqu\'au 15 janvier) est encore en place, ce qui constitue une publicité trompeuse.',
     correctionHint: 'Retirer immédiatement toute communication promotionnelle dont la date est dépassée.',
   },
+  // Zones supplémentaires non-erreurs (pièges pour l'apprenant)
+  {
+    id: 'scene-9',
+    x: 56, y: 17, width: 25, height: 12,
+    label: 'Rangée de pots bien alignés',
+    isError: false,
+  },
+  {
+    id: 'scene-10',
+    x: 3, y: 55, width: 20, height: 15,
+    label: 'Produits correctement placés sur l\'étagère',
+    isError: false,
+  },
 ]
 
 // ========================================
@@ -320,13 +333,18 @@ export const SCENE_ELEMENTS: SceneElement[] = [
 
 export const ILV_BUILD_OPTIONS = {
   elements: [
-    { id: 'panneau-suspendu', label: 'Panneau suspendu', category: 'signalétique', points: 15 },
-    { id: 'flechage', label: 'Fléchage directionnel', category: 'orientation', points: 15 },
-    { id: 'bandeau', label: 'Bandeau de gondole', category: 'information', points: 15 },
-    { id: 'etiquette', label: 'Étiquette prix conforme', category: 'réglementaire', points: 20 },
-    { id: 'fiche-info', label: 'Fiche information produit', category: 'conseil', points: 15 },
-    { id: 'plan', label: 'Plan du rayon', category: 'orientation', points: 10 },
-    { id: 'separateur', label: 'Séparateur de sous-famille', category: 'organisation', points: 10 },
+    // Bons éléments ILV
+    { id: 'panneau-suspendu', label: 'Panneau suspendu', category: 'signalétique', points: 15, isCorrect: true },
+    { id: 'flechage', label: 'Fléchage directionnel', category: 'orientation', points: 15, isCorrect: true },
+    { id: 'bandeau', label: 'Bandeau de gondole', category: 'information', points: 15, isCorrect: true },
+    { id: 'etiquette', label: 'Étiquette prix conforme', category: 'réglementaire', points: 20, isCorrect: true },
+    { id: 'fiche-info', label: 'Fiche information produit', category: 'conseil', points: 15, isCorrect: true },
+    { id: 'plan', label: 'Plan du rayon', category: 'orientation', points: 10, isCorrect: true },
+    { id: 'separateur', label: 'Séparateur de sous-famille', category: 'organisation', points: 10, isCorrect: true },
+    // Pièges : éléments PLV à ne PAS sélectionner pour une ILV
+    { id: 'stop-rayon-promo', label: 'Stop-rayon promotionnel', category: 'promotion', points: -15, isCorrect: false },
+    { id: 'kakemono-marque', label: 'Kakemono de marque', category: 'publicité', points: -15, isCorrect: false },
+    { id: 'totem-pub', label: 'Totem publicitaire', category: 'publicité', points: -10, isCorrect: false },
   ],
   criteria: [
     { id: 'lisibilite', label: 'Lisibilité', description: 'Les textes sont lisibles à bonne distance', maxPoints: 20 },
@@ -382,73 +400,65 @@ export const REGULATION_CASES = [
   {
     id: 'reg-1',
     title: 'Étiquetage de prix',
-    description: 'Comparez ces deux étiquettes de prix pour un pot de peinture de 2,5L.',
-    correct: {
-      productName: 'Peinture Acrylique Satin Blanc',
-      price: '34,90 €',
-      pricePerUnit: '13,96 €/L',
-      origin: 'Fabriqué en France',
-      reference: 'REF: PA-SAT-BL-2500',
-    },
-    incorrect: {
+    description: 'Observez cette étiquette de prix pour un pot de peinture de 2,5L. Quelles erreurs contient-elle ?',
+    // On n'affiche plus 2 colonnes. On montre UNE étiquette avec des erreurs à trouver.
+    etiquette: {
       productName: 'Peinture Acrylique',
       price: '34,90 €',
-      pricePerUnit: '', // manquant
+      pricePerUnit: '',
       origin: '',
       reference: '',
+      volume: '2,5 L',
     },
-    errors: [
-      'Prix au litre manquant (obligatoire)',
-      'Dénomination incomplète (finition et couleur manquantes)',
-      'Référence produit absente',
+    // Mélange de vraies erreurs et de faux choix
+    choices: [
+      { id: 'r1-a', text: 'Prix au litre manquant (obligatoire)', isError: true },
+      { id: 'r1-b', text: 'Dénomination incomplète (finition et couleur manquantes)', isError: true },
+      { id: 'r1-c', text: 'Référence produit absente', isError: true },
+      { id: 'r1-d', text: 'Le prix TTC n\'est pas affiché', isError: false },
+      { id: 'r1-e', text: 'Le volume n\'est pas indiqué', isError: false },
+      { id: 'r1-f', text: 'La police d\'écriture est trop petite', isError: false },
     ],
   },
   {
     id: 'reg-2',
     title: 'Promotion en vitrine',
-    description: 'Comparez ces deux vitrines promotionnelles.',
-    correct: {
-      message: 'Jusqu\'au 28 février : -20% sur la peinture ColorPlus',
-      conditions: 'Offre valable du 15/02 au 28/02 sur la gamme ColorPlus, dans la limite des stocks disponibles.',
-      prix: 'À partir de 24,90 € au lieu de 31,13 €',
-    },
-    incorrect: {
+    description: 'Observez cette vitrine promotionnelle. Quelles informations manquent ou sont incorrectes ?',
+    etiquette: {
       message: 'MÉGA PROMO PEINTURE -20%',
-      conditions: '',
-      prix: '',
+      visual: 'Grande affiche colorée en vitrine avec un pot de peinture',
     },
-    errors: [
-      'Dates de validité manquantes (obligatoire)',
-      'Produits concernés non précisés',
-      'Conditions de l\'offre absentes',
-      'Prix de référence non affiché',
+    choices: [
+      { id: 'r2-a', text: 'Dates de validité de l\'offre manquantes', isError: true },
+      { id: 'r2-b', text: 'Produits concernés non précisés', isError: true },
+      { id: 'r2-c', text: 'Prix de référence (avant réduction) non affiché', isError: true },
+      { id: 'r2-d', text: 'Conditions de l\'offre absentes', isError: true },
+      { id: 'r2-e', text: 'Le pourcentage de réduction est illégal', isError: false },
+      { id: 'r2-f', text: 'L\'affiche devrait être à l\'intérieur, pas en vitrine', isError: false },
+      { id: 'r2-g', text: 'Le mot MÉGA est interdit dans les promotions', isError: false },
     ],
   },
   {
     id: 'reg-3',
-    title: 'Information obligatoire produit',
-    description: 'Comparez ces deux fiches produit en rayon.',
-    correct: {
-      nom: 'Peinture Glycéro Mate – Blanc Pur',
-      volume: '2,5 L',
-      rendement: '12 m²/L',
-      sechage: '6h entre couches, 24h avant utilisation',
-      composition: 'Contient du white-spirit – Utiliser dans un local ventilé',
-      pictogrammes: '⚠️ Inflammable – Nocif',
-    },
-    incorrect: {
+    title: 'Fiche produit chimique',
+    description: 'Observez cette fiche produit pour une peinture glycéro. Quelles informations obligatoires manquent ?',
+    etiquette: {
       nom: 'Peinture Glycéro Blanche',
       volume: '2,5 L',
+      prix: '42,90 €',
       rendement: '',
       sechage: '',
       composition: '',
       pictogrammes: '',
     },
-    errors: [
-      'Pictogrammes de sécurité absents (obligatoire pour produits chimiques)',
-      'Informations de composition manquantes',
-      'Rendement non indiqué',
-      'Temps de séchage non mentionné',
+    choices: [
+      { id: 'r3-a', text: 'Pictogrammes de sécurité absents (obligatoire pour produits chimiques)', isError: true },
+      { id: 'r3-b', text: 'Informations de composition manquantes', isError: true },
+      { id: 'r3-c', text: 'Rendement non indiqué', isError: true },
+      { id: 'r3-d', text: 'Temps de séchage non mentionné', isError: true },
+      { id: 'r3-e', text: 'Le nom commercial de la marque est absent', isError: false },
+      { id: 'r3-f', text: 'Le code-barres EAN est manquant', isError: false },
+      { id: 'r3-g', text: 'La date de fabrication doit être indiquée', isError: false },
     ],
   },
 ]

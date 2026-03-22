@@ -265,11 +265,11 @@ function renderSupport(type: SupportSVGType) {
           {/* Reflet */}
           <line x1="60" y1="8" x2="72" y2="20" stroke="white" strokeWidth="2" opacity="0.6"/>
           <line x1="55" y1="8" x2="72" y2="25" stroke="white" strokeWidth="1" opacity="0.4"/>
-          {/* Adhésif */}
+          {/* Adhésif promotionnel */}
           <rect x="12" y="20" width="56" height="40" rx="6" fill="#F97316" opacity="0.9"/>
-          <text x="40" y="36" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold">OUVERTURE</text>
-          <text x="40" y="46" textAnchor="middle" fill="white" fontSize="6">EXCEPTIONNELLE</text>
-          <text x="40" y="55" textAnchor="middle" fill="#FDE68A" fontSize="6" fontWeight="bold">Dimanche 10h-18h</text>
+          <text x="40" y="34" textAnchor="middle" fill="white" fontSize="6" fontWeight="bold">SOLDES</text>
+          <text x="40" y="45" textAnchor="middle" fill="white" fontSize="10" fontWeight="800">-40%</text>
+          <text x="40" y="55" textAnchor="middle" fill="#FDE68A" fontSize="5" fontWeight="bold">sur toute la peinture</text>
         </g>
       )
 
