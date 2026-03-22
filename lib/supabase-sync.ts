@@ -102,6 +102,36 @@ export async function syncGetLearners(sessionId: string): Promise<Learner[]> {
   }
 }
 
+// Récupérer les tentatives d'un apprenant
+export async function syncGetAttempts(learnerId: string): Promise<MissionAttempt[]> {
+  if (!isSupabaseConfigured()) return []
+  try {
+    const { data } = await supabase
+      .from('attempts')
+      .select('*')
+      .eq('learner_id', learnerId)
+      .order('mission_id', { ascending: true })
+    return (data as MissionAttempt[]) || []
+  } catch {
+    return []
+  }
+}
+
+// Récupérer toutes les tentatives d'une session
+export async function syncGetSessionAttempts(sessionId: string): Promise<MissionAttempt[]> {
+  if (!isSupabaseConfigured()) return []
+  try {
+    const { data } = await supabase
+      .from('attempts')
+      .select('*')
+      .eq('session_id', sessionId)
+      .order('completed_at', { ascending: false })
+    return (data as MissionAttempt[]) || []
+  } catch {
+    return []
+  }
+}
+
 // Récupérer les sessions depuis Supabase
 export async function syncGetSessions(): Promise<Session[]> {
   if (!isSupabaseConfigured()) return []
