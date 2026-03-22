@@ -324,6 +324,24 @@ export const SCENE_ELEMENTS: SceneElement[] = [
     label: 'Produits correctement positionnés et rangés',
     isError: false,
   },
+  {
+    id: 'scene-11',
+    x: 55, y: 35, width: 25, height: 13,
+    label: 'Étagères droites proprement installées',
+    isError: false,
+  },
+  {
+    id: 'scene-12',
+    x: 3, y: 64, width: 20, height: 13,
+    label: 'Pots de peinture face visible vers le client',
+    isError: false,
+  },
+  {
+    id: 'scene-13',
+    x: 55, y: 64, width: 25, height: 13,
+    label: 'Gamme complète de couleurs présentée',
+    isError: false,
+  },
 ]
 
 // ========================================

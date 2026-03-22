@@ -125,21 +125,27 @@ export default function StoreScene({ className = '' }: { className?: string }) {
       </g>
 
       {/* ===== ZONE 3 : Kakemono MASQUANT la fiche conseil (ERREUR) ===== */}
-      {/* Fiche conseil DERRIÈRE le kakemono — visible sur les côtés */}
+      {/* Fiche conseil DERRIÈRE — dépasse largement à gauche et en bas du kakemono */}
       <g>
-        <rect x="182" y="160" width="34" height="55" rx="2" fill="white" stroke="#3B82F6" strokeWidth="1.5"/>
-        <rect x="182" y="160" width="34" height="10" rx="2" fill="#3B82F6"/>
-        <text x="199" y="168" textAnchor="middle" fill="white" fontSize="4" fontWeight="bold">CONSEIL</text>
-        <rect x="186" y="174" width="26" height="2" rx="1" fill="#E5E7EB"/>
-        <rect x="186" y="179" width="20" height="2" rx="1" fill="#E5E7EB"/>
-        <rect x="186" y="184" width="23" height="2" rx="1" fill="#E5E7EB"/>
+        {/* Fiche conseil visible : dépasse à gauche et en bas */}
+        <rect x="172" y="152" width="42" height="72" rx="3" fill="white" stroke="#3B82F6" strokeWidth="2"/>
+        {/* En-tête bleu de la fiche visible en haut à gauche */}
+        <rect x="172" y="152" width="42" height="12" rx="3" fill="#3B82F6"/>
+        <rect x="172" y="160" width="42" height="4" fill="#3B82F6"/>
+        <text x="193" y="161" textAnchor="middle" fill="white" fontSize="5" fontWeight="bold">CONSEIL</text>
+        {/* Lignes de texte visibles en bas sous le kakemono */}
+        <rect x="176" y="208" width="34" height="2" rx="1" fill="#93C5FD"/>
+        <rect x="176" y="213" width="28" height="2" rx="1" fill="#93C5FD"/>
+        <rect x="176" y="218" width="30" height="2" rx="1" fill="#93C5FD"/>
+        {/* Check marks visibles en bas */}
+        <circle cx="179" y="213" cy="213" r="1.5" fill="#3B82F6"/>
       </g>
-      {/* Kakemono PAR-DESSUS */}
+      {/* Kakemono PAR-DESSUS au centre — plus petit que la fiche */}
       <g>
-        <rect x="188" y="155" width="24" height="65" rx="2" fill="#EC4899" opacity="0.92" stroke="#DB2777" strokeWidth="1"/>
-        <text x="200" y="175" textAnchor="middle" fill="white" fontSize="4.5" fontWeight="bold">ColorPlus</text>
-        <text x="200" y="192" textAnchor="middle" fill="white" fontSize="8" fontWeight="800">-25%</text>
-        <text x="200" y="213" textAnchor="middle" fill="white" fontSize="4">Gamme Pro</text>
+        <rect x="183" y="162" width="26" height="52" rx="2" fill="#EC4899" stroke="#DB2777" strokeWidth="1.5"/>
+        <text x="196" y="178" textAnchor="middle" fill="white" fontSize="5" fontWeight="bold">ColorPlus</text>
+        <text x="196" y="193" textAnchor="middle" fill="white" fontSize="9" fontWeight="800">-25%</text>
+        <text x="196" y="208" textAnchor="middle" fill="white" fontSize="4">Gamme Pro</text>
       </g>
 
       {/* ===== ZONE 6 : Fiche produit ABSENTE — emplacement vide avec crochet ===== */}

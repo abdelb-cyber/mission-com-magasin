@@ -129,7 +129,6 @@ export default function Mission6Regulation({ mission, onComplete }: Props) {
               <p className="font-bold text-sm text-gray-900">Peinture Glycéro Blanche</p>
               <p className="text-xs text-gray-500 mt-1">Volume : 2,5 L</p>
               <p className="text-lg font-bold text-gray-900 mt-1">42,90 €</p>
-              <p className="text-xs text-gray-400 mt-1 italic">Aucune autre information affichée</p>
             </div>
           )}
         </div>

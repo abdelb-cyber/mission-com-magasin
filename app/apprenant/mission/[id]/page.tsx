@@ -61,20 +61,20 @@ export default function MissionPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header mission */}
-      <div className={`${mission.color} text-white px-5 pt-5 pb-6 rounded-b-3xl`}>
+      <div className={`${mission.color} text-white px-5 pt-5 pb-6 rounded-b-3xl shadow-lg`}>
         <div className="flex items-center gap-3 mb-3">
-          <button onClick={() => router.push('/apprenant/dashboard')} className="text-white/80 text-sm">
+          <button onClick={() => router.push('/apprenant/dashboard')} className="text-white text-sm font-medium">
             ← Retour
           </button>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-3xl">{mission.icon}</span>
+          <span className="text-3xl bg-white/20 rounded-xl p-2">{mission.icon}</span>
           <div>
-            <p className="text-white/70 text-xs font-semibold uppercase tracking-wide">Mission {mission.id}</p>
-            <h1 className="text-xl font-bold">{mission.title}</h1>
+            <p className="text-white text-xs font-bold uppercase tracking-wide">Mission {mission.id}</p>
+            <h1 className="text-xl font-extrabold drop-shadow-sm">{mission.title}</h1>
           </div>
         </div>
-        <p className="text-white/80 text-sm mt-2">{mission.description}</p>
+        <p className="text-white text-sm mt-2 font-medium">{mission.description}</p>
       </div>
 
       {/* Contenu mission */}
