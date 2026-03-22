@@ -28,11 +28,11 @@ export default function HomePage() {
     router.push('/apprenant/dashboard')
   }
 
-  const handleJoinSession = () => {
+  const handleJoinSession = async () => {
     if (!pseudo.trim()) { setError('Entrez votre prénom ou pseudo.'); return }
     if (!code.trim()) { setError('Entrez le code de la classe.'); return }
 
-    const result = joinSession(code.trim(), pseudo.trim())
+    const result = await joinSession(code.trim(), pseudo.trim())
     if (!result) {
       setError('Code de classe introuvable. Vérifiez le code.')
       return

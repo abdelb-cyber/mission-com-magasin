@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createLocalSession, getLocalSessions } from '@/lib/store'
+import { syncGetSessions } from '@/lib/supabase-sync'
 import { Session } from '@/types'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -14,7 +15,17 @@ export default function FormateurPage() {
   const [sessionName, setSessionName] = useState('')
 
   useEffect(() => {
-    setSessions(getLocalSessions())
+    // Charger depuis local + Supabase
+    const local = getLocalSessions()
+    setSessions(local)
+    syncGetSessions().then(remote => {
+      if (remote.length > 0) {
+        // Fusionner : ajouter les sessions distantes non présentes en local
+        const localIds = new Set(local.map(s => s.id))
+        const merged = [...local, ...remote.filter(r => !localIds.has(r.id))]
+        setSessions(merged)
+      }
+    })
   }, [])
 
   const handleCreate = () => {

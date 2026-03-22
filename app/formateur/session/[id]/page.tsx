@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { getLocalSessions, getLocalLearners } from '@/lib/store'
+import { syncGetLearners } from '@/lib/supabase-sync'
 import { Session, Learner } from '@/types'
 import { QRCodeSVG } from 'qrcode.react'
 import Button from '@/components/ui/Button'
@@ -21,7 +22,16 @@ export default function SessionDetailPage() {
     const found = sessions.find(s => s.id === params.id)
     if (found) {
       setSession(found)
-      setLearners(getLocalLearners(found.id))
+      // Charger apprenants : local + Supabase
+      const local = getLocalLearners(found.id)
+      setLearners(local)
+      syncGetLearners(found.id).then(remote => {
+        if (remote.length > 0) {
+          const localIds = new Set(local.map(l => l.id))
+          const merged = [...local, ...remote.filter(r => !localIds.has(r.id))]
+          setLearners(merged)
+        }
+      })
     }
     setBaseUrl(window.location.origin)
   }, [params.id])

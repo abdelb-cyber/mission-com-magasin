@@ -1,9 +1,11 @@
 'use client'
 
-// Store local simple pour gérer l'état de l'application
-// Fonctionne avec ou sans Supabase
+// Store local + synchronisation Supabase automatique
+// Le localStorage reste la source principale (fonctionne hors-ligne)
+// Supabase synchronise en arrière-plan quand disponible
 
 import { GameState, Learner, MissionAttempt, Session } from '@/types'
+import { syncCreateSession, syncCreateLearner, syncSaveAttempt, syncUpdateLearnerScore, syncFindSessionByCode } from './supabase-sync'
 
 const STORAGE_KEY = 'mission-com-magasin'
 
@@ -55,21 +57,30 @@ export function isTrainingMode(): boolean {
 
 export function saveAttempt(attempt: MissionAttempt) {
   const state = getStore()
-  // Remplacer le dernier attempt pour cette mission si existant
+  // Ajouter les IDs du learner et de la session
+  if (state.learner) {
+    attempt.learner_id = state.learner.id
+    attempt.session_id = state.learner.session_id
+  }
+
   const idx = state.attempts.findIndex(a => a.mission_id === attempt.mission_id)
   if (idx >= 0) {
-    // Garder le meilleur score
     if (attempt.score > state.attempts[idx].score) {
       state.attempts[idx] = attempt
     }
   } else {
     state.attempts.push(attempt)
   }
-  // Mettre à jour le score total
+
   if (state.learner) {
     state.learner.total_score = state.attempts.reduce((sum, a) => sum + a.score, 0)
+    // Sync Supabase en arrière-plan
+    syncUpdateLearnerScore(state.learner.id, state.learner.total_score)
   }
   saveStore(state)
+
+  // Sync tentative vers Supabase
+  syncSaveAttempt(attempt)
 }
 
 export function getAttempts(): MissionAttempt[] {
@@ -93,7 +104,7 @@ export function resetStore() {
   localStorage.removeItem(STORAGE_KEY)
 }
 
-// Sessions locales (pour le formateur en mode hors-ligne)
+// Sessions
 const SESSIONS_KEY = 'mcm-sessions'
 const LEARNERS_KEY = 'mcm-learners'
 
@@ -112,6 +123,8 @@ export function createLocalSession(name: string): Session {
   if (typeof window !== 'undefined') {
     localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions))
   }
+  // Sync Supabase
+  syncCreateSession(session)
   return session
 }
 
@@ -126,9 +139,20 @@ export function getLocalSessionByCode(code: string): Session | null {
   return sessions.find(s => s.code === code.toUpperCase()) || null
 }
 
-export function joinSession(code: string, pseudo: string): { learner: Learner; session: Session } | null {
-  const session = getLocalSessionByCode(code)
-  if (!session) return null
+export async function joinSession(code: string, pseudo: string): Promise<{ learner: Learner; session: Session } | null> {
+  // Chercher d'abord en local, puis dans Supabase
+  let session = getLocalSessionByCode(code)
+
+  if (!session) {
+    session = await syncFindSessionByCode(code)
+    if (!session) return null
+    // Sauvegarder en local aussi
+    const sessions = getLocalSessions()
+    sessions.push(session)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions))
+    }
+  }
 
   const learner: Learner = {
     id: crypto.randomUUID(),
@@ -138,7 +162,6 @@ export function joinSession(code: string, pseudo: string): { learner: Learner; s
     total_score: 0,
   }
 
-  // Sauvegarder le learner dans la liste de la session
   const learners = getLocalLearners(session.id)
   learners.push(learner)
   if (typeof window !== 'undefined') {
@@ -147,6 +170,9 @@ export function joinSession(code: string, pseudo: string): { learner: Learner; s
 
   setLearner(learner)
   setSession(session)
+
+  // Sync Supabase
+  syncCreateLearner(learner)
 
   return { learner, session }
 }
