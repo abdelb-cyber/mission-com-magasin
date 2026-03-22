@@ -135,7 +135,7 @@ function renderSupport(type: SupportSVGType) {
           <rect x="5" y="35" width="70" height="4" fill="#9CA3AF"/>
           {/* Bandeau */}
           <rect x="5" y="28" width="70" height="10" rx="2" fill="#1E40AF"/>
-          <text x="40" y="35" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold">PEINTURES INTÉRIEURES</text>
+          <text x="40" y="35" textAnchor="middle" fill="white" fontSize="6" fontWeight="bold">PEINTURES INT.</text>
           {/* Produits sur étagère */}
           <rect x="10" y="40" width="10" height="13" rx="1" fill="#BFDBFE"/>
           <rect x="23" y="40" width="10" height="13" rx="1" fill="#BBF7D0"/>

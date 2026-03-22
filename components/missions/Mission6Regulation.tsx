@@ -113,7 +113,7 @@ export default function Mission6Regulation({ mission, onComplete }: Props) {
                 <span className="text-white text-xs font-bold">PRIX</span>
               </div>
               <p className="text-xs text-gray-500">Peinture Acrylique</p>
-              <p className="text-2xl font-extrabold text-gray-900 text-center my-1">34,90 €</p>
+              <p className="text-2xl font-extrabold text-gray-900 text-center my-1">34,90 € <span className="text-xs font-normal text-gray-500">TTC</span></p>
               <p className="text-xs text-gray-400">2,5 L</p>
             </div>
           )}

@@ -36,8 +36,13 @@ export default function Mission1DragSort({ mission, onComplete }: Props) {
     const item = items[currentIndex]
     const isCorrect = item.category === choice
 
+    // Scoring : chaque bonne réponse vaut des points, total = 100
+    const pointsPerCard = currentIndex === items.length - 1
+      ? mission.maxScore - Math.floor(mission.maxScore / items.length) * (items.length - 1)
+      : Math.floor(mission.maxScore / items.length)
+
     if (isCorrect) {
-      setScore(prev => prev + Math.round(mission.maxScore / items.length))
+      setScore(prev => prev + pointsPerCard)
       setFeedback({ type: 'success', message: `Correct ! "${item.label}" est bien un support d'${item.category === 'ilv' ? 'ILV' : 'PLV'}.` })
     } else {
       setErrors(prev => [...prev, item.label])
@@ -51,7 +56,7 @@ export default function Mission1DragSort({ mission, onComplete }: Props) {
       setFeedback(null)
       if (currentIndex + 1 >= items.length) {
         setShowResults(true)
-        const finalScore = isCorrect ? score + Math.round(mission.maxScore / items.length) : score
+        const finalScore = isCorrect ? score + pointsPerCard : score
         saveAttempt({
           id: crypto.randomUUID(),
           learner_id: '',

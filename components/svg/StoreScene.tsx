@@ -1,71 +1,64 @@
 'use client'
 
 // Scène de rayon de magasin de bricolage (rayon peinture) en SVG
-// Les zones sont numérotées et correspondent aux SCENE_ELEMENTS dans data/missions.ts
+// Les erreurs sont visuellement compréhensibles sans indice externe
 
-interface StoreSceneProps {
-  className?: string
-}
-
-export default function StoreScene({ className = '' }: StoreSceneProps) {
+export default function StoreScene({ className = '' }: { className?: string }) {
   return (
-    <svg width="100%" height="100%" viewBox="0 0 400 320" className={className} xmlns="http://www.w3.org/2000/svg">
+    <svg width="100%" height="100%" viewBox="0 0 400 340" className={className} xmlns="http://www.w3.org/2000/svg">
+      {/* Date du jour affichée en haut */}
+      <rect x="280" y="2" width="115" height="16" rx="3" fill="#F3F4F6" stroke="#D1D5DB" strokeWidth="0.5"/>
+      <text x="337" y="13" textAnchor="middle" fill="#6B7280" fontSize="7">📅 Aujourd&apos;hui : 22 mars</text>
+
       {/* Sol */}
-      <rect x="0" y="270" width="400" height="50" fill="#E5E7EB"/>
+      <rect x="0" y="280" width="400" height="60" fill="#E5E7EB"/>
 
       {/* Mur du fond */}
-      <rect x="0" y="0" width="400" height="270" fill="#F9FAFB"/>
+      <rect x="0" y="18" width="400" height="262" fill="#F9FAFB"/>
 
       {/* ===== ZONE 1 : Panneau "PEINTURE" (correct) ===== */}
-      <g id="zone-panneau">
-        <rect x="130" y="8" width="140" height="32" rx="4" fill="#1E40AF"/>
-        <text x="200" y="29" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">PEINTURE</text>
-        <rect x="190" y="0" width="20" height="10" fill="#6B7280"/>
+      <g>
+        <rect x="130" y="22" width="140" height="32" rx="4" fill="#1E40AF"/>
+        <text x="200" y="43" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">PEINTURE</text>
+        <rect x="190" y="14" width="20" height="10" fill="#6B7280"/>
       </g>
 
       {/* ===== GONDOLE GAUCHE ===== */}
-      <g id="gondole-gauche">
-        <rect x="15" y="50" width="170" height="210" fill="none" stroke="#D1D5DB" strokeWidth="1"/>
-        {/* Étagères */}
-        <rect x="15" y="50" width="170" height="3" fill="#9CA3AF"/>
-        <rect x="15" y="100" width="170" height="3" fill="#9CA3AF"/>
-        <rect x="15" y="150" width="170" height="3" fill="#9CA3AF"/>
-        <rect x="15" y="200" width="170" height="3" fill="#9CA3AF"/>
-        <rect x="15" y="250" width="170" height="3" fill="#9CA3AF"/>
+      <g>
+        <rect x="15" y="62" width="170" height="210" fill="none" stroke="#D1D5DB" strokeWidth="1"/>
+        <rect x="15" y="62" width="170" height="3" fill="#9CA3AF"/>
+        <rect x="15" y="112" width="170" height="3" fill="#9CA3AF"/>
+        <rect x="15" y="162" width="170" height="3" fill="#9CA3AF"/>
+        <rect x="15" y="212" width="170" height="3" fill="#9CA3AF"/>
+        <rect x="15" y="262" width="170" height="3" fill="#9CA3AF"/>
 
-        {/* ZONE 5 : Bandeau de gondole ILLISIBLE (ERREUR) */}
-        <rect x="15" y="44" width="170" height="8" rx="1" fill="#3B82F6"/>
-        <text x="100" y="50" textAnchor="middle" fill="white" fontSize="3" fontWeight="bold">
-          PEINTURES INTÉRIEURES MURS ET PLAFONDS ACRYLIQUE ET GLYCÉRO
+        {/* ZONE 5 : Bandeau de gondole ILLISIBLE (ERREUR) — texte volontairement minuscule */}
+        <rect x="15" y="56" width="170" height="8" rx="1" fill="#3B82F6"/>
+        <text x="100" y="62" textAnchor="middle" fill="white" fontSize="2.5" fontWeight="bold">
+          PEINTURES INTÉRIEURES MURS PLAFONDS ACRYLIQUE GLYCÉRO BOISERIES
         </text>
 
-        {/* Pots de peinture - étagère 1 */}
+        {/* Pots de peinture */}
         {[0,1,2,3,4,5].map(j => (
-          <rect key={`pot1-${j}`} x={22 + j*27} y={55} width={22} height={42} rx="3"
+          <rect key={`p1-${j}`} x={22 + j*27} y={67} width={22} height={42} rx="3"
             fill={['#BFDBFE','#BBF7D0','#FDE68A','#FECACA','#E9D5FF','#BFDBFE'][j]}
             stroke={['#93C5FD','#86EFAC','#FCD34D','#FCA5A5','#D8B4FE','#93C5FD'][j]}
             strokeWidth="1"/>
         ))}
-
-        {/* Pots - étagère 2 */}
         {[0,1,2,3,4,5].map(j => (
-          <rect key={`pot2-${j}`} x={22 + j*27} y={105} width={22} height={42} rx="3"
+          <rect key={`p2-${j}`} x={22 + j*27} y={117} width={22} height={42} rx="3"
             fill={['#FDE68A','#BFDBFE','#BBF7D0','#E9D5FF','#FECACA','#FDE68A'][j]}
             stroke={['#FCD34D','#93C5FD','#86EFAC','#D8B4FE','#FCA5A5','#FCD34D'][j]}
             strokeWidth="1"/>
         ))}
-
-        {/* Pots - étagère 3 */}
         {[0,1,2,3,4,5].map(j => (
-          <rect key={`pot3-${j}`} x={22 + j*27} y={155} width={22} height={42} rx="3"
+          <rect key={`p3-${j}`} x={22 + j*27} y={167} width={22} height={42} rx="3"
             fill={['#FECACA','#FDE68A','#BFDBFE','#BBF7D0','#BFDBFE','#E9D5FF'][j]}
             stroke={['#FCA5A5','#FCD34D','#93C5FD','#86EFAC','#93C5FD','#D8B4FE'][j]}
             strokeWidth="1"/>
         ))}
-
-        {/* Pots - étagère 4 */}
         {[0,1,2,3,4,5].map(j => (
-          <rect key={`pot4-${j}`} x={22 + j*27} y={205} width={22} height={42} rx="3"
+          <rect key={`p4-${j}`} x={22 + j*27} y={217} width={22} height={42} rx="3"
             fill={['#BBF7D0','#E9D5FF','#FECACA','#BFDBFE','#FDE68A','#BBF7D0'][j]}
             stroke={['#86EFAC','#D8B4FE','#FCA5A5','#93C5FD','#FCD34D','#86EFAC'][j]}
             strokeWidth="1"/>
@@ -73,42 +66,41 @@ export default function StoreScene({ className = '' }: StoreSceneProps) {
       </g>
 
       {/* ===== ZONE 4 : Stop-rayon PROMO (correct) ===== */}
-      <g id="zone-stop-rayon">
-        <rect x="185" y="105" width="55" height="28" rx="3" fill="#EF4444"/>
-        <text x="212" y="118" textAnchor="middle" fill="white" fontSize="6" fontWeight="bold">PROMO</text>
-        <text x="212" y="128" textAnchor="middle" fill="#FDE68A" fontSize="9" fontWeight="800">2+1</text>
+      <g>
+        <rect x="185" y="115" width="55" height="28" rx="3" fill="#EF4444"/>
+        <text x="212" y="128" textAnchor="middle" fill="white" fontSize="6" fontWeight="bold">PROMO</text>
+        <text x="212" y="138" textAnchor="middle" fill="#FDE68A" fontSize="9" fontWeight="800">2+1</text>
       </g>
 
       {/* ===== GONDOLE DROITE ===== */}
-      <g id="gondole-droite">
-        <rect x="215" y="50" width="170" height="210" fill="none" stroke="#D1D5DB" strokeWidth="1"/>
-        <rect x="215" y="50" width="170" height="3" fill="#9CA3AF"/>
-        <rect x="215" y="100" width="170" height="3" fill="#9CA3AF"/>
-        <rect x="215" y="150" width="170" height="3" fill="#9CA3AF"/>
-        <rect x="215" y="200" width="170" height="3" fill="#9CA3AF"/>
-        <rect x="215" y="250" width="170" height="3" fill="#9CA3AF"/>
+      <g>
+        <rect x="215" y="62" width="170" height="210" fill="none" stroke="#D1D5DB" strokeWidth="1"/>
+        <rect x="215" y="62" width="170" height="3" fill="#9CA3AF"/>
+        <rect x="215" y="112" width="170" height="3" fill="#9CA3AF"/>
+        <rect x="215" y="162" width="170" height="3" fill="#9CA3AF"/>
+        <rect x="215" y="212" width="170" height="3" fill="#9CA3AF"/>
+        <rect x="215" y="262" width="170" height="3" fill="#9CA3AF"/>
 
-        {/* Pots droite */}
         {[0,1,2,3,4,5].map(j => (
-          <rect key={`potr1-${j}`} x={222 + j*27} y={55} width={22} height={42} rx="3"
+          <rect key={`pr1-${j}`} x={222 + j*27} y={67} width={22} height={42} rx="3"
             fill={['#FDE68A','#BFDBFE','#FECACA','#BBF7D0','#E9D5FF','#BFDBFE'][j]}
             stroke={['#FCD34D','#93C5FD','#FCA5A5','#86EFAC','#D8B4FE','#93C5FD'][j]}
             strokeWidth="1"/>
         ))}
         {[0,1,2,3,4,5].map(j => (
-          <rect key={`potr2-${j}`} x={222 + j*27} y={105} width={22} height={42} rx="3"
+          <rect key={`pr2-${j}`} x={222 + j*27} y={117} width={22} height={42} rx="3"
             fill={['#BFDBFE','#FDE68A','#BBF7D0','#FECACA','#BFDBFE','#E9D5FF'][j]}
             stroke={['#93C5FD','#FCD34D','#86EFAC','#FCA5A5','#93C5FD','#D8B4FE'][j]}
             strokeWidth="1"/>
         ))}
         {[0,1,2,3,4,5].map(j => (
-          <rect key={`potr3-${j}`} x={222 + j*27} y={155} width={22} height={42} rx="3"
+          <rect key={`pr3-${j}`} x={222 + j*27} y={167} width={22} height={42} rx="3"
             fill={['#E9D5FF','#FECACA','#BFDBFE','#FDE68A','#BBF7D0','#FECACA'][j]}
             stroke={['#D8B4FE','#FCA5A5','#93C5FD','#FCD34D','#86EFAC','#FCA5A5'][j]}
             strokeWidth="1"/>
         ))}
         {[0,1,2,3,4,5].map(j => (
-          <rect key={`potr4-${j}`} x={222 + j*27} y={205} width={22} height={42} rx="3"
+          <rect key={`pr4-${j}`} x={222 + j*27} y={217} width={22} height={42} rx="3"
             fill={['#BBF7D0','#BFDBFE','#FDE68A','#E9D5FF','#FECACA','#BBF7D0'][j]}
             stroke={['#86EFAC','#93C5FD','#FCD34D','#D8B4FE','#FCA5A5','#86EFAC'][j]}
             strokeWidth="1"/>
@@ -116,39 +108,62 @@ export default function StoreScene({ className = '' }: StoreSceneProps) {
       </g>
 
       {/* ===== ZONE 2 : Étiquette prix SANS prix au litre (ERREUR) ===== */}
-      <g id="zone-etiquette">
-        <rect x="300" y="148" width="50" height="28" rx="2" fill="white" stroke="#D1D5DB" strokeWidth="1.5"/>
-        <text x="325" y="160" textAnchor="middle" fill="#111827" fontSize="6">Peinture</text>
-        <text x="325" y="172" textAnchor="middle" fill="#111827" fontSize="10" fontWeight="bold">34,90€</text>
+      <g>
+        <rect x="300" y="160" width="55" height="30" rx="2" fill="white" stroke="#D1D5DB" strokeWidth="1.5"/>
+        <rect x="300" y="160" width="55" height="8" rx="2" fill="#22C55E"/>
+        <text x="327" y="167" textAnchor="middle" fill="white" fontSize="4" fontWeight="bold">PRIX</text>
+        <text x="327" y="178" textAnchor="middle" fill="#111827" fontSize="5">Peinture Acryl.</text>
+        <text x="327" y="187" textAnchor="middle" fill="#111827" fontSize="8" fontWeight="bold">34,90€ TTC</text>
       </g>
 
-      {/* ===== ZONE 8 : Promo EXPIRÉE toujours affichée (ERREUR) ===== */}
-      <g id="zone-promo-expiree">
-        <rect x="110" y="100" width="72" height="35" rx="3" fill="#FDE68A" stroke="#F59E0B" strokeWidth="1.5"/>
-        <text x="146" y="115" textAnchor="middle" fill="#92400E" fontSize="7" fontWeight="bold">-30% PEINTURE</text>
-        <text x="146" y="127" textAnchor="middle" fill="#92400E" fontSize="5.5">Jusqu&apos;au 15 janv.</text>
+      {/* ===== ZONE 8 : Promo EXPIRÉE toujours affichée (ERREUR) — date clairement passée ===== */}
+      <g>
+        <rect x="100" y="112" width="82" height="38" rx="3" fill="#FDE68A" stroke="#F59E0B" strokeWidth="1.5"/>
+        <text x="141" y="126" textAnchor="middle" fill="#92400E" fontSize="7" fontWeight="bold">-30% PEINTURE</text>
+        <text x="141" y="138" textAnchor="middle" fill="#92400E" fontSize="5.5">Offre valable</text>
+        <text x="141" y="147" textAnchor="middle" fill="#DC2626" fontSize="5.5" fontWeight="bold">jusqu&apos;au 15 janvier</text>
       </g>
 
       {/* ===== ZONE 3 : Kakemono MASQUANT la fiche conseil (ERREUR) ===== */}
-      <g id="zone-kakemono">
-        <rect x="186" y="150" width="28" height="60" rx="2" fill="#EC4899" opacity="0.9"/>
-        <text x="200" y="172" textAnchor="middle" fill="white" fontSize="5" fontWeight="bold">ColorPlus</text>
-        <text x="200" y="188" textAnchor="middle" fill="white" fontSize="7" fontWeight="800">-25%</text>
+      {/* Fiche conseil DERRIÈRE le kakemono — visible sur les côtés */}
+      <g>
+        <rect x="182" y="160" width="34" height="55" rx="2" fill="white" stroke="#3B82F6" strokeWidth="1.5"/>
+        <rect x="182" y="160" width="34" height="10" rx="2" fill="#3B82F6"/>
+        <text x="199" y="168" textAnchor="middle" fill="white" fontSize="4" fontWeight="bold">CONSEIL</text>
+        <rect x="186" y="174" width="26" height="2" rx="1" fill="#E5E7EB"/>
+        <rect x="186" y="179" width="20" height="2" rx="1" fill="#E5E7EB"/>
+        <rect x="186" y="184" width="23" height="2" rx="1" fill="#E5E7EB"/>
+      </g>
+      {/* Kakemono PAR-DESSUS */}
+      <g>
+        <rect x="188" y="155" width="24" height="65" rx="2" fill="#EC4899" opacity="0.92" stroke="#DB2777" strokeWidth="1"/>
+        <text x="200" y="175" textAnchor="middle" fill="white" fontSize="4.5" fontWeight="bold">ColorPlus</text>
+        <text x="200" y="192" textAnchor="middle" fill="white" fontSize="8" fontWeight="800">-25%</text>
+        <text x="200" y="213" textAnchor="middle" fill="white" fontSize="4">Gamme Pro</text>
       </g>
 
-      {/* ===== ZONE 6 : Fiche produit ABSENTE (ERREUR) ===== */}
-      <g id="zone-fiche-absente">
-        <rect x="355" y="200" width="28" height="45" rx="2" fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeDasharray="4,3"/>
-        <text x="369" y="220" textAnchor="middle" fill="#D1D5DB" fontSize="5">Fiche</text>
-        <text x="369" y="230" textAnchor="middle" fill="#D1D5DB" fontSize="5">produit</text>
-        <text x="369" y="240" textAnchor="middle" fill="#D1D5DB" fontSize="8">?</text>
+      {/* ===== ZONE 6 : Fiche produit ABSENTE — emplacement vide avec crochet ===== */}
+      <g>
+        {/* Crochet/support vide sur l'étagère */}
+        <rect x="355" y="213" width="26" height="3" fill="#9CA3AF"/>
+        <rect x="362" y="210" width="4" height="6" fill="#6B7280" rx="1"/>
+        <rect x="370" y="210" width="4" height="6" fill="#6B7280" rx="1"/>
+        {/* Zone vide avec label */}
+        <rect x="352" y="216" width="30" height="44" rx="2" fill="#FEF2F2" stroke="#D1D5DB" strokeWidth="1" strokeDasharray="4,3"/>
+        <text x="367" y="234" textAnchor="middle" fill="#9CA3AF" fontSize="4.5">Fiche</text>
+        <text x="367" y="243" textAnchor="middle" fill="#9CA3AF" fontSize="4.5">produit</text>
+        <text x="367" y="255" textAnchor="middle" fill="#D1D5DB" fontSize="10">∅</text>
       </g>
 
       {/* ===== ZONE 7 : Marquage au sol vers caisse (correct) ===== */}
-      <g id="zone-marquage">
-        <polygon points="200,275 210,290 206,290 206,308 194,308 194,290 190,290" fill="#3B82F6" opacity="0.5"/>
-        <text x="200" y="318" textAnchor="middle" fill="#3B82F6" fontSize="6">Caisse →</text>
+      <g>
+        <polygon points="200,288 210,302 206,302 206,318 194,318 194,302 190,302" fill="#3B82F6" opacity="0.5"/>
+        <text x="200" y="332" textAnchor="middle" fill="#3B82F6" fontSize="6">Caisse →</text>
       </g>
+
+      {/* ===== ZONES 9-10 : Zones non-erreur (pièges) ===== */}
+      {/* Zone 9 : pots bien rangés */}
+      {/* Zone 10 : produits correctement placés — pas de visuel spécial, ce sont les pots normaux */}
     </svg>
   )
 }
